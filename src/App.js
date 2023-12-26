@@ -13,6 +13,7 @@ class App extends Component {
     dataInput: "cat",
     page: 1,
     openModal: false,
+    largeImage: "",
   };
 
   async componentDidMount() {
@@ -31,8 +32,15 @@ class App extends Component {
       const fetch= await axios.get(`https://pixabay.com/api/?q=${this.state.dataInput}&key=35543000-cc8a37d4e982ce557296d34e8&image_type=photo&orientation=horizontal`)
       const data = fetch.data.hits;
       this.setState({images: data, isLoading: false})
-    }
+    };
     
+  }
+
+  getLargeImage = (url) => {
+    this.setState({
+      largeImage: url,
+    })
+    this.changeModal()
   }
   plusInputValue = (dataInput) => {
     console.log(dataInput);
@@ -44,11 +52,13 @@ changeModal = () => {
       openModal: !this.state.openModal
   });
 }; 
-
+ 
   render() {
     const {isLoading} = this.state;
     return (
       <>
+      {this.state.openModal && <Modal openModal={this.state.openModal} changeModal={this.changeModal} largeImage={this.state.largeImage}/>}
+       
       <SearchBar plusInputValue={this.plusInputValue}/>
       {isLoading === true ?  <ProgressBar
   height="80"
@@ -58,12 +68,10 @@ changeModal = () => {
   wrapperClass="progress-bar-wrapper"
   borderColor = '#F4442E'
   barColor = '#51E5FF'
-/> :  <ImageGallery data={this.state.images}/>}
+/> :  <ImageGallery data={this.state.images} getLargeImage={this.getLargeImage}/> }
 
-      <Modal openModal={this.state.openModal} changeModal={this.changeModal} images={this.state.images}>
-      <button onClick={() => this.changeModal}>Close</button>
-      </Modal>
-      <button onClick={() => this.changeModal}>Open</button>
+     
+      
       </>
     )
   }
