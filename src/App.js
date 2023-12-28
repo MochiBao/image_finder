@@ -4,37 +4,54 @@ import ImageGallery from "./components/images/imageGallery/ImageGallery";
 import { ProgressBar } from "react-loader-spinner";
 import SearchBar from "./components/searchbar/SearchBar";
 import Modal from "./components/modal/Modal";
+import Pagination from "./components/pagination/Pagination";
+import { request } from "./API/Request";
+
 
 
 class App extends Component {
   state = {
     images: [],
     isLoading: false,
-    dataInput: "cat",
+    dataInput: "",
     page: 1,
     openModal: false,
     largeImage: "",
+    snapshot: null,
   };
 
   async componentDidMount() {
-    this.setState({isLoading:true});
-    const fetch= await axios.get(`https://pixabay.com/api/?q="cat"&key=35543000-cc8a37d4e982ce557296d34e8&image_type=photo&orientation=horizontal`)
-    const data = fetch.data.hits;
-    this.setState({images: data, isLoading: false})
-    console.log(data)
+    this.updateImages();
     
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    if (this.state.dataInput !== prevState.dataInput ) {
-      console.log(prevState)
-      this.setState({isLoading:true});
-      const fetch= await axios.get(`https://pixabay.com/api/?q=${this.state.dataInput}&key=35543000-cc8a37d4e982ce557296d34e8&image_type=photo&orientation=horizontal`)
-      const data = fetch.data.hits;
-      this.setState({images: data, isLoading: false})
-    };
+  getSnapshotBeforeUpdate() {
+    return document.body.scrollHeight;
+    
+  };
+
+  async componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.images !== this.state.images) {
+      this.setState({snapshot})
+      window.scrollTo({top: this.state.snapshot, behavior: "smooth"})
+    }
+    if (this.state.dataInput !== prevState.dataInput || this.state.page !== prevState.page) {
+      this.updateImages();
+    }; 
     
   }
+   
+   updateImages = async() => {
+    this.setState({isLoading:true});
+    const data= await request(this.state.dataInput, this.state.page);
+    console.log(data);
+    this.setState((prevState) => ({images: [...prevState.images, ...data]}));
+    this.setState({isLoading: false});
+  }
+  plusPage = () => {
+    this.setState((prevState) => ({page: prevState.page + 1}))
+  };
+
 
   getLargeImage = (url) => {
     this.setState({
@@ -43,8 +60,10 @@ class App extends Component {
     this.changeModal()
   }
   plusInputValue = (dataInput) => {
-    console.log(dataInput);
+    this.setState({images: [], page: 1})
     this.setState({dataInput})
+   
+
   };
 
 changeModal = () => {
@@ -69,6 +88,7 @@ changeModal = () => {
   borderColor = '#F4442E'
   barColor = '#51E5FF'
 /> :  <ImageGallery data={this.state.images} getLargeImage={this.getLargeImage}/> }
+<Pagination plusPage={this.plusPage}/>
 
      
       
