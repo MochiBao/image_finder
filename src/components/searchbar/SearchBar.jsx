@@ -1,28 +1,26 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
+import s from './searchBar.module.css'
 
-export default class SearchBar extends Component {
-    state = {
-        dataInput: "",
+const SearchBar = ({plusInputValue}) => {
+    const [dataInput, setDataInput] = useState("");
+
+    const input = (e) => {
+        setDataInput(e.target.value)
+    }
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        plusInputValue(dataInput);
     };
 
-    input = (e) => {
-        this.setState({dataInput: e.target.value})
-    }
-
-    onSubmit = (e) => {
-        e.preventDefault();
-        this.props.plusInputValue(this.state.dataInput)
-    }
-
-  render() {
     return (
-        <header className="searchbar">
-        <form className="form" onSubmit={this.onSubmit}>
+        <header className={s.Searchbar}>
+        <form className={s.SearchForm} onSubmit={onSubmit}>
           <button type="submit" className="button">
             <span className="button-label">Search</span>
           </button>
       
-          <input onChange={this.input}
+          <input onChange={input}
             className="input"
             type="text"
             autoComplete="off"
@@ -33,4 +31,5 @@ export default class SearchBar extends Component {
       </header>
     )
   }
-}
+
+export default SearchBar;

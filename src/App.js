@@ -1,5 +1,4 @@
-import axios from "axios";
-import { Component } from "react";
+import React, { useEffect, useState } from 'react'
 import ImageGallery from "./components/images/imageGallery/ImageGallery";
 import { ProgressBar } from "react-loader-spinner";
 import SearchBar from "./components/searchbar/SearchBar";
@@ -8,96 +7,76 @@ import Pagination from "./components/pagination/Pagination";
 import { request } from "./API/Request";
 
 
-
-class App extends Component {
-  state = {
-    images: [],
-    isLoading: false,
-    dataInput: "",
-    page: 1,
-    openModal: false,
-    largeImage: "",
-    snapshot: null,
+const App = () => {
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataInput, setDataInput] = useState("");
+  const [page, setPage] = useState(1);
+  const [openModal, setOpenModal] = useState(false);
+  const [largeImage, setLargeImage] = useState("");
+  
+  const updateImages = async() => {
+    setIsLoading(true);
+    const data= await request(dataInput, page);
+    setImages([...images, ...data]);
+    setIsLoading(false);
   };
 
-  async componentDidMount() {
-    this.updateImages();
-    
-  };
+  
+  useEffect(() => {
+    updateImages();
+  }, []);
 
-  getSnapshotBeforeUpdate() {
-    return document.body.scrollHeight;
-    
-  };
-
-  async componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.images !== this.state.images) {
-      this.setState({snapshot})
-      window.scrollTo({top: this.state.snapshot, behavior: "smooth"})
-    }
-    if (this.state.dataInput !== prevState.dataInput || this.state.page !== prevState.page) {
-      this.updateImages();
-    }; 
-    
-  }
+  useEffect(() => {
+    if (dataInput === "") return;
+    updateImages()
+  }, [dataInput, page])
+  
    
-   updateImages = async() => {
-    this.setState({isLoading:true});
-    const data= await request(this.state.dataInput, this.state.page);
-    console.log(data);
-    this.setState((prevState) => ({images: [...prevState.images, ...data]}));
-    this.setState({isLoading: false});
-  }
-  plusPage = () => {
-    this.setState((prevState) => ({page: prevState.page + 1}))
-  };
-
-
-  getLargeImage = (url) => {
-    this.setState({
-      largeImage: url,
-    })
-    this.changeModal()
-  }
-  plusInputValue = (dataInput) => {
-    this.setState({images: [], page: 1})
-    this.setState({dataInput})
-   
-
-  };
-
-changeModal = () => {
-  this.setState({
-      openModal: !this.state.openModal
-  });
-}; 
  
-  render() {
-    const {isLoading} = this.state;
-    return (
-      <>
-      {this.state.openModal && <Modal openModal={this.state.openModal} changeModal={this.changeModal} largeImage={this.state.largeImage}/>}
-       
-      <SearchBar plusInputValue={this.plusInputValue}/>
-      {isLoading === true ?  <ProgressBar
-  height="80"
-  width="80"
-  ariaLabel="progress-bar-loading"
-  wrapperStyle={{}}
-  wrapperClass="progress-bar-wrapper"
-  borderColor = '#F4442E'
-  barColor = '#51E5FF'
-/> :  <ImageGallery data={this.state.images} getLargeImage={this.getLargeImage}/> }
-<Pagination plusPage={this.plusPage}/>
 
-     
-      
-      </>
-    )
+  const plusPage = () => {
+    setPage(page + 1)
+  };
+
+
+  const getLargeImage = (url) => {
+    setLargeImage(url)
+    changeModal()
   }
-};
+  const plusInputValue = (dataInput) => {
+    setImages([]);
+    setPage(1)
+    setDataInput(dataInput)
+  };
 
-export default App;
+  const changeModal = () => {
+  setOpenModal(!openModal);
+}; 
+
+ return (
+  <>
+  {openModal && <Modal openModal={openModal} changeModal={changeModal} largeImage={largeImage}/>}
+   
+  <SearchBar plusInputValue={plusInputValue}/>
+  {isLoading === true ?  <ProgressBar
+height="80"
+width="80"
+ariaLabel="progress-bar-loading"
+wrapperStyle={{}}
+wrapperClass="progress-bar-wrapper"
+borderColor = '#F4442E'
+barColor = '#51E5FF'
+/> :  <ImageGallery data={images} getLargeImage={getLargeImage}/> }
+<Pagination plusPage={plusPage}/>
+  </>
+ )
+ 
+}
+
+export default App
+
+
 
 
 

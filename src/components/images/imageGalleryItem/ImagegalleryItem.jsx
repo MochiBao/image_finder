@@ -1,8 +1,9 @@
 import React from 'react'
+import s from './imageGalleryItem.module.css';
 
 const ImagegalleryItem = ({webformatURL, largeImageURL, getLargeImage}) => {
     return(
-        <li className="gallery-item" onClick={() => getLargeImage(largeImageURL)}>
+        <li className={s.ImageGalleryItem} onClick={() => getLargeImage(largeImageURL)}>
              <img src={webformatURL} alt="" />
         </li>
     );

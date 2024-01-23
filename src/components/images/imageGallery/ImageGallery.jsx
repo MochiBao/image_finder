@@ -1,10 +1,11 @@
 import React from 'react'
 import ImagegalleryItem from '../imageGalleryItem/ImagegalleryItem'
+import s from './imageGallery.module.css'
 
 
 const ImageGallery = ({data, getLargeImage}) => {
   return (
-    <ul className="gallery">
+    <ul className={s.ImageGallery}>
         {data.map(({id, webformatURL, largeImageURL}) => {
 
             return (
