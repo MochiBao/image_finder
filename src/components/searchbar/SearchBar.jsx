@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import s from './searchBar.module.css'
+import { xz } from '../../App';
+
 
 const SearchBar = ({plusInputValue}) => {
     const [dataInput, setDataInput] = useState("");
 
+    const inputt = useContext(xz);
+
     const input = (e) => {
-        setDataInput(e.target.value)
+        setDataInput(e.target.value);
     }
 
     const onSubmit = (e) => {
         e.preventDefault();
-        plusInputValue(dataInput);
+        inputt(dataInput);
     };
 
     return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState, useContext } from 'react'
 import ImageGallery from "./components/images/imageGallery/ImageGallery";
 import { ProgressBar } from "react-loader-spinner";
 import SearchBar from "./components/searchbar/SearchBar";
@@ -6,8 +6,10 @@ import Modal from "./components/modal/Modal";
 import Pagination from "./components/pagination/Pagination";
 import { request } from "./API/Request";
 
+export const xz = createContext(null);
 
 const App = () => {
+  
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [dataInput, setDataInput] = useState("");
@@ -15,6 +17,8 @@ const App = () => {
   const [openModal, setOpenModal] = useState(false);
   const [largeImage, setLargeImage] = useState("");
   
+  
+
   const updateImages = async() => {
     setIsLoading(true);
     const data= await request(dataInput, page);
@@ -43,7 +47,9 @@ const App = () => {
   const getLargeImage = (url) => {
     setLargeImage(url)
     changeModal()
-  }
+  };
+
+
   const plusInputValue = (dataInput) => {
     setImages([]);
     setPage(1)
@@ -56,9 +62,11 @@ const App = () => {
 
  return (
   <>
+  
   {openModal && <Modal openModal={openModal} changeModal={changeModal} largeImage={largeImage}/>}
-   
-  <SearchBar plusInputValue={plusInputValue}/>
+  <xz.Provider value={plusInputValue}>
+  <SearchBar plusInputValue />
+  </xz.Provider>
   {isLoading === true ?  <ProgressBar
 height="80"
 width="80"
