@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState, useContext } from 'react'
+import React, { createContext, useEffect, useState,} from 'react'
 import ImageGallery from "./components/images/imageGallery/ImageGallery";
 import { ProgressBar } from "react-loader-spinner";
 import SearchBar from "./components/searchbar/SearchBar";
@@ -6,7 +6,7 @@ import Modal from "./components/modal/Modal";
 import Pagination from "./components/pagination/Pagination";
 import { request } from "./API/Request";
 
-export const xz = createContext(null);
+export const contextInput = createContext(null);
 
 const App = () => {
   
@@ -64,9 +64,9 @@ const App = () => {
   <>
   
   {openModal && <Modal openModal={openModal} changeModal={changeModal} largeImage={largeImage}/>}
-  <xz.Provider value={plusInputValue}>
+  <contextInput.Provider value={plusInputValue}>
   <SearchBar plusInputValue />
-  </xz.Provider>
+  </contextInput.Provider>
   {isLoading === true ?  <ProgressBar
 height="80"
 width="80"
